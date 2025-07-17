@@ -1,0 +1,6 @@
+[33mf2bd2fa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m first commit23
+[33m5ffa024[m[33m ([m[1;31morigin/main[m[33m)[m ✨ Implementado sistema de prefixo dinâmico completo - Adicionado PrefixManager com persistência de dados - Criado comando prefixo.js para gerenciamento - Atualizado todos os comandos para usar prefixo dinâmico - Corrigido arquivo ajuda.js com sintaxe adequada - Atualizado README com documentação completa - Sistema permite prefixos únicos por servidor - Validações de segurança implementadas
+[33m4a232a4[m first commit2
+[33m82882b5[m fix: corrige formato do arquivo discloud.config
+[33m10f8d4f[m chore: adiciona configuração para deploy na Discloud
+[33mc502f96[m first commit

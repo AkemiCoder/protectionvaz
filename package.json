@@ -1,0 +1,21 @@
+{
+  "name": "akemi-security-bot",
+  "version": "1.0.0",
+  "description": "Bot de proteção para servidores Discord com sistema de prefixo dinâmico",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": ["discord", "bot", "security", "otection", "prefix"],
+  "author": "AkemiCoder",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.0",
+    "dotenv": "^16.0.30",
+    "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+} 
