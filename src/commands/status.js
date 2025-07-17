@@ -1,9 +1,12 @@
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    name:status,   aliases: ['info, ],
+    name:status,   aliases: ['info'],
     description: 'Mostra o status do bot e proteções',
     async execute(message, args, client) {
+        const prefix = client.prefixManager.getPrefix(message.guild.id);
+        const defaultPrefix = client.prefixManager.defaultPrefix;
+        
         const embed = new EmbedBuilder()
             .setTitle('🤖 Status do Bot de Proteção')
             .setDescription(Informações sobre o bot e suas proteções')
@@ -11,6 +14,8 @@ module.exports = {
                 { name: '🤖 Bot Status', value: '🟢 Online', inline: true },
                 { name: '📊 Servidores', value: `${client.guilds.cache.size}`, inline: true },
              [object Object]name: '👥 Usuários', value: `${client.users.cache.size}`, inline: true },
+                [object Object] name:🎨 Prefixo Atual', value: `\`${prefix}\``, inline: true },
+                [object Object] name: 📋 Prefixo Padrão', value: `\`$[object Object]defaultPrefix}\``, inline: true },
                [object Object] name: '🛡️ Anti-Raid, value: ✅ Ativo', inline: true },
                 [object Object] name: '🚫 Anti-Spam, value: ✅ Ativo', inline: true },
                [object Object]name:🔒 Proteção Cargos, value: ✅ Ativo', inline: true },

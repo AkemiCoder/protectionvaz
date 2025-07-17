@@ -1,284 +1,176 @@
-const { Client, GatewayIntentBits, Partials, Collection, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, Events } = require('discord.js');
 const fs = require('fs');
-const path = require(path');
+const path = require('path');
 require('dotenv').config();
 
 // Configuração do cliente Discord
 const client = new Client({
-    intents:     GatewayIntentBits.Guilds,
+    intents: [
+        GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildEmojisAndStickers,
-        GatewayIntentBits.GuildModeration
-    ],
-    partials: 
-        Partials.Channel,
-        Partials.Message,
-        Partials.User,
-        Partials.GuildMember
+        GatewayIntentBits.GuildPresences
     ]
 });
 
-// Coleções para armazenar dados
+// Coleção para comandos
 client.commands = new Collection();
-client.cooldowns = new Collection();
-client.protectionData = new Map();
 
-// Configurações do bot
-const config = {
-    prefix: process.env.PREFIX || vaz!    token: process.env.DISCORD_TOKEN,
-    guildId: process.env.GUILD_ID,
-    colors: [object Object]  success: process.env.LOG_COLOR_SUCCESS || #00ff00    error: process.env.LOG_COLOR_ERROR || #ff0000,
-        warning: process.env.LOG_COLOR_WARNING || #ffff0     info: process.env.LOG_COLOR_INFO || '#099  }
-};
-
-// Sistema de proteção
-class ProtectionSystem[object Object]
+// Sistema de prefixo dinâmico
+class PrefixManager {
     constructor() {
-        this.antiRaid = {
-            enabled: true,
-            threshold: 5, // Número de joins em 10 segundos
-            timeWindow: 10000gundos
-            recentJoins: new Map()
-        };
-        
-        this.antiSpam = {
-            enabled: true,
-            threshold: 5, // Mensagens em 5 segundos
-            timeWindow: 500gundos
-            userMessages: new Map()
-        };
-        
-        this.roleProtection = {
-            enabled: true,
-            protectedRoles: new Set()
-        };
-        
-        this.channelProtection = {
-            enabled: true,
-            protectedChannels: new Set()
-        };
+        this.prefixes = new Map();
+        this.defaultPrefix = process.env.PREFIX || 'vaz!';
+        this.loadPrefixes();
     }
 
-    // Anti-raid
-    async handleMemberJoin(member) {
-        if (!this.antiRaid.enabled) return;
-
-        const guildId = member.guild.id;
-        const now = Date.now();
-        
-        if (!this.antiRaid.recentJoins.has(guildId)) [object Object]
-            this.antiRaid.recentJoins.set(guildId, []);
-        }
-        
-        const recentJoins = this.antiRaid.recentJoins.get(guildId);
-        recentJoins.push(now);
-        
-        // Remove joins antigos
-        const validJoins = recentJoins.filter(time => now - time < this.antiRaid.timeWindow);
-        this.antiRaid.recentJoins.set(guildId, validJoins);
-        
-        if (validJoins.length >= this.antiRaid.threshold) {
-            await this.triggerAntiRaid(member.guild);
-        }
-    }
-
-    async triggerAntiRaid(guild) {
+    // Carregar prefixos salvos
+    loadPrefixes() {
         try {
-            // Ativa modo emergência
-            await guild.setVerificationLevel(4); // Muito Alto
-            
-            // Log da proteção
-            const logChannel = guild.channels.cache.find(ch => ch.name.includes('log') || ch.name.includes('mod'));
-            if (logChannel)[object Object]             const embed = new EmbedBuilder()
-                    .setTitle('🛡️ Anti-Raid Ativado')
-                    .setDescription('Sistema de proteção anti-raid foi ativado automaticamente!')
-                    .setColor(config.colors.warning)
-                    .setTimestamp();
-                
-                await logChannel.send({ embeds: [embed] });
-            }
+            const data = fs.readFileSync('./prefixes.json', 'utf8');
+            const prefixes = JSON.parse(data);
+            this.prefixes = new Map(Object.entries(prefixes));
         } catch (error) {
-            console.error('Erro ao ativar anti-raid:,error);
+            console.log('Arquivo de prefixos não encontrado, usando padrão');
+            this.savePrefixes();
         }
     }
 
-    // Anti-spam
-    async handleMessage(message) {
-        if (!this.antiSpam.enabled || message.author.bot) return;
-
-        const userId = message.author.id;
-        const now = Date.now();
-        
-        if (!this.antiSpam.userMessages.has(userId)) [object Object]
-            this.antiSpam.userMessages.set(userId, []);
-        }
-        
-        const userMessages = this.antiSpam.userMessages.get(userId);
-        userMessages.push(now);
-        
-        // Remove mensagens antigas
-        const validMessages = userMessages.filter(time => now - time < this.antiSpam.timeWindow);
-        this.antiSpam.userMessages.set(userId, validMessages);
-        
-        if (validMessages.length >= this.antiSpam.threshold) {
-            await this.handleSpam(message);
-        }
-    }
-
-    async handleSpam(message) {
+    // Salvar prefixos
+    savePrefixes() {
         try {
-            // Adiciona reação de aviso
-            await message.react('⚠️');
-            
-            // Timeout temporário
-            const member = message.member;
-            if (member && member.moderatable)[object Object]             await member.timeout(3000Spam detectado'); // 5 minutos
-                
-                const embed = new EmbedBuilder()
-                    .setTitle(🚫 Spam Detectado')
-                    .setDescription(`${message.author} foi silenciado por 5 minutos por spam.`)
-                    .setColor(config.colors.error)
-                    .setTimestamp();
-                
-                await message.channel.send({ embeds: [embed] });
-            }
+            const data = JSON.stringify(Object.fromEntries(this.prefixes), null, 2);
+            fs.writeFileSync('./prefixes.json', data);
         } catch (error) {
-            console.error(Erro ao lidar com spam:,error);
+            console.error('Erro ao salvar prefixos:', error);
         }
     }
 
-    // Proteção de cargos
-    async handleRoleDelete(role) {
-        if (!this.roleProtection.enabled) return;
-
-        try [object Object]          // Tenta recriar o cargo
-            const newRole = await role.guild.roles.create({
-                name: role.name,
-                color: role.color,
-                hoist: role.hoist,
-                permissions: role.permissions,
-                mentionable: role.mentionable,
-                reason: 'Proteção automática - cargo recriado'
-            });
-
-            const embed = new EmbedBuilder()
-                .setTitle(🛡️ Proteção de Cargo)
-                .setDescription(`Cargo **${role.name}** foi recriado automaticamente!`)
-                .setColor(config.colors.success)
-                .setTimestamp();
-
-            const logChannel = role.guild.channels.cache.find(ch => ch.name.includes('log') || ch.name.includes('mod'));
-            if (logChannel)[object Object]             await logChannel.send({ embeds: [embed] });
-            }
-        } catch (error) {
-            console.error('Erro ao recriar cargo:,error);
-        }
+    // Obter prefixo para um servidor
+    getPrefix(guildId) {
+        return this.prefixes.get(guildId) || this.defaultPrefix;
     }
 
-    // Proteção de canais
-    async handleChannelDelete(channel) {
-        if (!this.channelProtection.enabled) return;
+    // Definir prefixo para um servidor
+    setPrefix(guildId, prefix) {
+        this.prefixes.set(guildId, prefix);
+        this.savePrefixes();
+    }
 
-        try {
-            // Recria o canal
-            const newChannel = await channel.guild.channels.create({
-                name: channel.name,
-                type: channel.type,
-                parent: channel.parent,
-                position: channel.position,
-                reason: 'Proteção automática - canal recriado'
-            });
+    // Resetar prefixo para padrão
+    resetPrefix(guildId) {
+        this.prefixes.delete(guildId);
+        this.savePrefixes();
+    }
 
-            const embed = new EmbedBuilder()
-                .setTitle('🛡️ Proteção de Canal)
-                .setDescription(`Canal **${channel.name}** foi recriado automaticamente!`)
-                .setColor(config.colors.success)
-                .setTimestamp();
-
-            const logChannel = channel.guild.channels.cache.find(ch => ch.name.includes('log') || ch.name.includes('mod'));
-            if (logChannel)[object Object]             await logChannel.send({ embeds: [embed] });
-            }
-        } catch (error) {
-            console.error('Erro ao recriar canal:,error);
-        }
+    // Listar todos os prefixos
+    getAllPrefixes() {
+        return Object.fromEntries(this.prefixes);
     }
 }
 
-// Instância do sistema de proteção
-const protectionSystem = new ProtectionSystem();
-
-// Eventos do bot
-client.once('ready', () =>[object Object]
-    console.log(`🤖 Bot ${client.user.tag} está online!`);
-    console.log(`🛡️ Sistema de proteção ativado`);
-    console.log(`📊 Servindo ${client.guilds.cache.size} servidores`);
-    
-    client.user.setActivity('Protegendo servidores', { type: 'WATCHING' });
-});
-
-// Evento de membro entrando (anti-raid)
-client.on('guildMemberAdd', async (member) => {
-    await protectionSystem.handleMemberJoin(member);
-});
-
-// Evento de mensagem (anti-spam)
-client.on('messageCreate,async (message) =>[object Object]if (message.author.bot) return;
-    
-    await protectionSystem.handleMessage(message);
-    
-    // Sistema de comandos
-    if (!message.content.startsWith(config.prefix)) return;
-    
-    const args = message.content.slice(config.prefix.length).trim().split(/ +/);
-    const commandName = args.shift().toLowerCase();
-    
-    const command = client.commands.get(commandName) || 
-                   client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-    
-    if (!command) return;
-    
-    try {
-        await command.execute(message, args, client);
-    } catch (error)[object Object]     console.error('Erro ao executar comando:, error);
-        message.reply(❌Ocorreu um erro ao executar o comando!');
-    }
-});
-
-// Eventos de proteção
-client.on('roleDelete,async (role) => {
-    await protectionSystem.handleRoleDelete(role);
-});
-
-client.on('channelDelete,async (channel) => {
-    await protectionSystem.handleChannelDelete(channel);
-});
+// Instanciar gerenciador de prefixos
+client.prefixManager = new PrefixManager();
 
 // Carregar comandos
-const commandsPath = path.join(__dirname,commands');
-if (fs.existsSync(commandsPath)) {
+function loadCommands() {
+    const commandsPath = path.join(__dirname, 'commands');
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-    
+
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
         const command = require(filePath);
         
-        if ('name' in command && 'execute' in command) {
+        if (Array.isArray(command)) {
+            // Se o comando retorna um array, adicionar cada comando
+            command.forEach(cmd => {
+                if (cmd.name && cmd.execute) {
+                    client.commands.set(cmd.name, cmd);
+                    console.log(`✅ Comando carregado: ${cmd.name}`);
+                }
+            });
+        } else if (command.name && command.execute) {
+            // Comando único
             client.commands.set(command.name, command);
-            console.log(`📝 Comando carregado: ${command.name}`);
+            console.log(`✅ Comando carregado: ${command.name}`);
         }
     }
 }
 
-// Tratamento de erros
-process.on('unhandledRejection', error => {
-    console.error('Erro não tratado:', error);
+// Evento ready
+client.once(Events.ClientReady, () => {
+    console.log(`🤖 Bot ${client.user.tag} está online!`);
+    console.log(`📊 Servindo ${client.guilds.cache.size} servidores`);
+    console.log(`👥 ${client.users.cache.size} usuários`);
+    
+    // Definir status do bot
+    client.user.setActivity('vaz!ajuda | Proteção', { type: 'PLAYING' });
 });
 
-process.on(uncaughtException', error => {
-    console.error(Exceção não capturada:, error);
+// Evento de mensagem
+client.on(Events.MessageCreate, async message => {
+    if (message.author.bot) return;
+    if (!message.guild) return;
+
+    const guildId = message.guild.id;
+    const prefix = client.prefixManager.getPrefix(guildId);
+    
+    // Verificar se a mensagem começa com o prefixo
+    if (!message.content.startsWith(prefix)) return;
+
+    // Extrair comando e argumentos
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const commandName = args.shift().toLowerCase();
+
+    // Buscar comando
+    const command = client.commands.get(commandName) || 
+                   client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+    if (!command) return;
+
+    try {
+        // Verificar permissões
+        if (command.permissions) {
+            const authorPerms = message.channel.permissionsFor(message.author);
+            if (!authorPerms || !command.permissions.every(perm => authorPerms.has(perm))) {
+                return message.reply('❌ Você não tem permissão para usar este comando!');
+            }
+        }
+
+        // Executar comando
+        await command.execute(message, args, client);
+    } catch (error) {
+        console.error(`Erro ao executar comando ${commandName}:`, error);
+        message.reply('❌Ocorreu um erro ao executar este comando!').catch(() => {
+            // Ignorar erro de reply
+        });
+    }
 });
 
-// Login do bot
-client.login(config.token); 
+// Evento de erro
+client.on('error', error => {
+    console.error('Erro do Discord.js:', error);
+});
+
+// Evento de desconexão
+client.on('disconnect', () => {
+    console.log('Bot desconectado do Discord');
+});
+
+// Processo de encerramento
+process.on('SIGINT', () => {
+    console.log('Encerrando bot...');
+    client.destroy();
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    console.log('Encerrando bot...');
+    client.destroy();
+    process.exit(0);
+});
+
+// Carregar comandos e conectar
+loadCommands();
+client.login(process.env.DISCORD_TOKEN); 

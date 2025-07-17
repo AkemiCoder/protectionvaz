@@ -3,21 +3,24 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('
 module.exports = [object Object]   name: 'ajuda,   aliases: ['help', 'comandos', 'commands'],
     description: 'Mostra todos os comandos disponíveis',
     async execute(message, args, client) {
+        const prefix = client.prefixManager.getPrefix(message.guild.id);
+        
         const embed = new EmbedBuilder()
             .setTitle('🛡️ Bot de Proteção - Comandos')
             .setDescription(Listacompleta de comandos disponíveis:')
             .addFields(
-               [object Object]name:🛡️ vaz!protecao,value:Sistema de proteção do servidor', inline: true },
-                { name: '🎭 vaz!reacao,value: 'Sistema de reações com emojis', inline: true },
-                { name: '📊 vaz!status', value: 'Status do bot e proteções', inline: true },
-                { name: '⚙️ vaz!config', value:Configurações do bot', inline: true },
-                { name: '🔒 vaz!cargo', value: 'Proteção de cargos', inline: true },
-              [object Object] name: '📝 vaz!canal', value: 'Proteção de canais', inline: true },
-                [object Object]name: '🚫 vaz!spam', value: 'Configurar anti-spam', inline: true },
-                { name: '🛡️ vaz!raid', value:Configurar anti-raid', inline: true },
-              [object Object]name: '📋 vaz!logs', value: Configurar logs, inline:true }
+                { name:🛡️ + prefix + protecao,value:Sistema de proteção do servidor', inline: true },
+                { name: 🎭 ' + prefix + reacao,value: 'Sistema de reações com emojis', inline: true },
+                { name: 📊 + prefix + status', value: 'Status do bot e proteções', inline: true },
+                { name: ⚙️ + prefix + config', value:Configurações do bot', inline: true },
+                { name: 🔒 ' + prefix +cargo', value: 'Proteção de cargos', inline: true },
+                { name: 📝 + prefix +canal', value: 'Proteção de canais', inline: true },
+                { name: 🚫 + prefix + 'spam', value: 'Configurar anti-spam', inline: true },
+                { name:🛡️ + prefix + 'raid', value:Configurar anti-raid', inline: true },
+                { name: 📋+ prefix + 'logs', value: Configurar logs', inline: true },
+                { name: 🎨 + prefix +prefixo, value: 'Alterar prefixo dos comandos, inline:true }
             )
-            .setColor('#8B5BF')
+            .setColor('#8B5F6')
             .setFooter({ text: Bot de Proteção - AkemiCoder })
             .setTimestamp();
 
@@ -51,22 +54,23 @@ module.exports = [object Object]   name: 'ajuda,   aliases: ['help', 'comandos',
         });
 
         // Coletor de interações
-        const collector = msg.createMessageComponentCollector({ time:60000
+        const collector = msg.createMessageComponentCollector({ time: 60;
+        
         collector.on('collect', async interaction => [object Object]         if (interaction.user.id !== message.author.id)[object Object]            return interaction.reply([object Object]content:❌ Apenas quem usou o comando pode interagir!, ephemeral: true });
             }
 
             const customId = interaction.customId;
 
-            switch (customId)[object Object]              caseprotecao_help                   await handleProtecaoHelp(interaction);
+            switch (customId)[object Object]              caseprotecao_help                   await handleProtecaoHelp(interaction, prefix);
                     break;
                 case 'reacao_help':
-                    await handleReacaoHelp(interaction);
+                    await handleReacaoHelp(interaction, prefix);
                     break;
                 case 'config_help':
-                    await handleConfigHelp(interaction);
+                    await handleConfigHelp(interaction, prefix);
                     break;
                 case 'status_help':
-                    await handleStatusHelp(interaction);
+                    await handleStatusHelp(interaction, prefix);
                     break;
             }
         });
@@ -85,35 +89,35 @@ module.exports = [object Object]   name: 'ajuda,   aliases: ['help', 'comandos',
     }
 };
 
-async function handleProtecaoHelp(interaction)[object Object]
+async function handleProtecaoHelp(interaction, prefix)[object Object]
     const embed = new EmbedBuilder()
         .setTitle('🛡️ Comandos de Proteção')
         .setDescription('Comandos relacionados à proteção do servidor:')
         .addFields(
-           [object Object]name:🛡️ vaz!protecao', value: Menuprincipal de proteção', inline: true },
-            [object Object]name: '🚫 vaz!spam', value: 'Configurar anti-spam', inline: true },
-            { name: '🛡️ vaz!raid', value:Configurar anti-raid', inline: true },
-            { name: '🔒 vaz!cargo', value: 'Proteção de cargos', inline: true },
-          [object Object] name: '📝 vaz!canal', value: 'Proteção de canais', inline: true },
-          [object Object]name: '📋 vaz!logs', value: Configurar logs, inline: true }
+            { name:🛡️ + prefix + protecao', value: Menuprincipal de proteção', inline: true },
+            { name: 🚫 + prefix + 'spam', value: 'Configurar anti-spam', inline: true },
+            { name:🛡️ + prefix + 'raid', value:Configurar anti-raid', inline: true },
+            { name: 🔒 ' + prefix +cargo', value: 'Proteção de cargos', inline: true },
+            { name: 📝 + prefix +canal', value: 'Proteção de canais', inline: true },
+            { name: 📋+ prefix + 'logs', value: Configurar logs, inline: true }
         )
-        .setColor(#0F00')
+        .setColor(#8BF6')
         .setTimestamp();
 
     await interaction.update({ embeds: [embed] });
 }
 
-async function handleReacaoHelp(interaction)[object Object]
+async function handleReacaoHelp(interaction, prefix)[object Object]
     const embed = new EmbedBuilder()
         .setTitle(🎭Comandos de Reação')
         .setDescription('Comandos relacionados ao sistema de reações:')
         .addFields(
-            { name: '🎭 vaz!reacao,value: Menu de reações', inline: true },
-            { name: ✅ vaz!reacao <emoji>, value:Adicionar reação simples', inline: true },
-            { name: '🎯 vaz!reacao multi, value: Adicionar múltiplas reações', inline: true },
-            [object Object]name: '📋 vaz!emojis', value:Listar emojis do servidor', inline: true },
-          [object Object] name: 🔄 vaz!autoreacao', value: 'Configurar auto-reações', inline: true },
-            { name: '⚙️ vaz!configreacao', value: 'Configurar reações, inline: true }
+            { name: 🎭 ' + prefix + reacao,value: Menu de reações', inline: true },
+            { name:✅ ' + prefix +reacao <emoji>, value:Adicionar reação simples', inline: true },
+            { name: 🎯 ' + prefix + 'reacao multi, value: Adicionar múltiplas reações', inline: true },
+            { name: 📋 + prefix + emojis', value:Listar emojis do servidor', inline: true },
+            { name: 🔄+ prefix + 'autoreacao', value: 'Configurar auto-reações', inline: true },
+            { name: ⚙️ + prefix + 'configreacao', value: 'Configurar reações, inline: true }
         )
         .setColor(#FF6B6B')
         .setTimestamp();
@@ -121,37 +125,36 @@ async function handleReacaoHelp(interaction)[object Object]
     await interaction.update({ embeds: [embed] });
 }
 
-async function handleConfigHelp(interaction)[object Object]
+async function handleConfigHelp(interaction, prefix)[object Object]
     const embed = new EmbedBuilder()
         .setTitle('⚙️ Comandos de Configuração')
         .setDescription('Comandos para configurar o bot:')
         .addFields(
-            { name: '⚙️ vaz!config, value:Menu de configurações', inline: true },
-            { name:🎨 vaz!prefixo, value: 'Alterar prefixo dos comandos', inline: true },
-          [object Object]name: '📝 vaz!logs', value:Configurar canal de logs', inline: true },
-           [object Object]name: 🛡️ vaz!protecoes', value:Configurar proteções', inline: true },
-            { name:🎭 vaz!reacoes', value: 'Configurar reações', inline: true },
-          [object Object] name: 📊 vaz!estatisticas', value:Configurar estatísticas, inline: true }
+            { name: ⚙️ + prefix + config, value:Menu de configurações', inline: true },
+            { name: 🎨 + prefix +prefixo, value: 'Alterar prefixo dos comandos', inline: true },
+            { name: 📝+ prefix + 'logs', value:Configurar canal de logs', inline: true },
+            { name:🛡️ + prefix + protecoes', value:Configurar proteções', inline: true },
+            { name: 🎭 ' + prefix +reacoes', value: 'Configurar reações', inline: true },
+            { name: 📊 + prefix + 'estatisticas', value:Configurar estatísticas, inline: true }
         )
-        .setColor(#4DC4')
-        .setTimestamp();
+        .setColor(#44     .setTimestamp();
 
     await interaction.update({ embeds: [embed] });
 }
 
-async function handleStatusHelp(interaction)[object Object]
+async function handleStatusHelp(interaction, prefix)[object Object]
     const embed = new EmbedBuilder()
         .setTitle('📊 Comandos de Status')
         .setDescription(Comandos para verificar status:')
         .addFields(
-            { name: '📊 vaz!status', value: 'Status geral do bot', inline: true },
-           [object Object]name: 🛡️ vaz!protecoes', value:Status das proteções', inline: true },
-            { name:🎭 vaz!reacoes', value: 'Status das reações', inline: true },
-          [object Object] name: 📈 vaz!estatisticas', value: 'Estatísticas do servidor', inline: true },
-          [object Object] name: '🤖 vaz!bot', value: 'Informações do bot', inline: true },
-          [object Object]name: '📋 vaz!logs', value: Ver logs recentes, inline: true }
+            { name: 📊 + prefix + status', value: 'Status geral do bot', inline: true },
+            { name:🛡️ + prefix + protecoes', value:Status das proteções', inline: true },
+            { name: 🎭 ' + prefix +reacoes', value: 'Status das reações', inline: true },
+            { name: 📈 + prefix + 'estatisticas', value: 'Estatísticas do servidor', inline: true },
+            { name: 🤖 + prefix + 'bot', value: 'Informações do bot', inline: true },
+            { name: 📋+ prefix + 'logs', value: Ver logs recentes, inline: true }
         )
-        .setColor(#96EB4')
+        .setColor(#96B4F')
         .setTimestamp();
 
     await interaction.update({ embeds: [embed] });
